@@ -104,11 +104,11 @@ abstract class AbstractDataDumper extends AbstractDataHandler implements DataDum
             } else {
                 $in = array();
                 foreach ($tableMap->getColumns() as $column) {
-                    $in[] = strtolower($column->getName());
+                    $in[] = $this->dbMap->getDBAdapter()->quoteIdentifier(strtolower($column->getName()));
                 }
                 $stmt = $this
                     ->con
-                    ->query(sprintf('SELECT %s FROM %s', implode(',', $in), constant(constant($tableName.'::PEER').'::TABLE_NAME')));
+                    ->query(sprintf('SELECT %s FROM %s', implode(', ', $in), $this->dbMap->getDBAdapter()->quoteIdentifier(constant(constant($tableName.'::PEER').'::TABLE_NAME'))));
 
                 $resultsSets[] = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $stmt->closeCursor();
