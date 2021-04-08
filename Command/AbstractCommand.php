@@ -186,7 +186,9 @@ abstract class AbstractCommand extends ContainerAwareCommand
         // Enable output buffering
         Phing::setOutputStream(new \OutputStream(fopen('php://output', 'w')));
         Phing::setErrorStream(new \OutputStream(fopen('php://output', 'w')));
+        $oldErrorReporting = error_reporting(); // Phing::startup changes the error_reporting level, this is to top Phing from doing that
         Phing::startup();
+        error_reporting($oldErrorReporting & ~E_DEPRECATED);
         Phing::setProperty('phing.home', getenv('PHING_HOME'));
 
         ob_start();
@@ -216,6 +218,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
             ob_end_flush();
         }
 
+        Phing::shutdown();
         return $returnStatus;
     }
 
